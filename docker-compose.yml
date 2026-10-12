@@ -24,6 +24,8 @@ services:
       context: backend
     env_file:
       - backend/.env
+    environment:
+      DB_ADDRESS: mongodb://root:example@mongo:27017/weblarek?authSource=admin
     volumes:
       - ./backend/src:/app/src
       - public:/app/src/public
@@ -33,6 +35,12 @@ services:
       - internal
     depends_on:
       - mongo
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   server:
     build:
@@ -43,8 +51,10 @@ services:
       - frontend:/var/app
       - public:/var/public
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_healthy
     networks:
       - internal
 
