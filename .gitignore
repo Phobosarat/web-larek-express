@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+!.env.example
+
+# Build files
+dist/
+
+# Logs
+*.log
+
+# Temporary files
+temp/
